@@ -13,7 +13,7 @@ namespace TestProjectSfApi.Application.SystemDataLoadLogItems.Commands.UpdateSys
 
         public SystemDataLoadLog SystemDataLoadLogInit { get; set; }
 
-        public string? tableName { get; set; }
+        public string? TableName { get; set; }
     }
 
     public class UpdateSystemDataLoadLogItemCommandHandler : IRequestHandler<UpdateSystemDataLoadLogItemCommand>
@@ -35,7 +35,7 @@ namespace TestProjectSfApi.Application.SystemDataLoadLogItems.Commands.UpdateSys
 
             var id = request.Id;
             request.Id = null;
-            var restRequest = new RestRequest($"/sobjects/{request}/{id}", Method.Patch)
+            var restRequest = new RestRequest($"/sobjects/{request.TableName}/{id}", Method.Patch)
                 .AddJsonBody(JsonSerializer.Serialize(request.SystemDataLoadLogInit, JsonInternalSerializerOptions.Default), false);
             request.Id = id;
 

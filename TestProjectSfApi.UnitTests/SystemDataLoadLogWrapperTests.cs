@@ -9,12 +9,12 @@ namespace TestProjectSfApi.UnitTests
     [TestClass]
     public class SystemDataLoadLogWrapperTests
     {
-        private Mock<ISender?> _mediator;
+        private Mock<ISender?> _mediatorMock;
 
         [TestInitialize]
         public void TestInitialize()
         {
-            _mediator = new Mock<ISender?>();
+            _mediatorMock = new Mock<ISender?>();
         }
 
         [TestMethod]
@@ -23,7 +23,7 @@ namespace TestProjectSfApi.UnitTests
             //Arrange
 
             var getRecord = new GetRecordsQuery();
-            _mediator.Setup(a => a.Send(It.IsAny<GetRecordsQuery>(), new CancellationToken()))
+            _mediatorMock.Setup(a => a.Send(It.IsAny<GetRecordsQuery>(), new CancellationToken()))
                 .Callback<IRequest<QueryResponseDTO>, CancellationToken > ((r1,r2) => getRecord = (GetRecordsQuery)r1)
                 .ReturnsAsync(new QueryResponseDTO()
                 {
@@ -31,7 +31,7 @@ namespace TestProjectSfApi.UnitTests
                         new SystemDataLoadLog() { ActualRawTotalAmount = 12.33m, ActualRawTotalRecordCount = 3 } }
                 });
 
-            var wrapper = new SystemDataLoadLogWrapper(_mediator.Object);
+            var wrapper = new SystemDataLoadLogWrapper(_mediatorMock.Object);
 
             //Act
 
@@ -49,7 +49,7 @@ namespace TestProjectSfApi.UnitTests
 
             var getRecord = new GetRecordsQuery();
 
-            _mediator.Setup(a => a.Send(It.IsAny<GetRecordsQuery>(), new CancellationToken()))
+            _mediatorMock.Setup(a => a.Send(It.IsAny<GetRecordsQuery>(), new CancellationToken()))
                 .Callback<IRequest<QueryResponseDTO>, CancellationToken>((r1, r2) => getRecord = (GetRecordsQuery)r1)
                 .ReturnsAsync(new QueryResponseDTO()
                 {
@@ -58,10 +58,10 @@ namespace TestProjectSfApi.UnitTests
                 });
 
             var checkAmount = new SystemDataLoadLog();
-            _mediator.Setup(a => a.Send(It.IsAny<SystemDataLoadLog>(), new CancellationToken()))
+            _mediatorMock.Setup(a => a.Send(It.IsAny<SystemDataLoadLog>(), new CancellationToken()))
                 .Callback<object, CancellationToken>((r1, r2) => checkAmount = (SystemDataLoadLog)r1);
 
-            var wrapper = new SystemDataLoadLogWrapper(_mediator.Object);
+            var wrapper = new SystemDataLoadLogWrapper(_mediatorMock.Object);
 
             //Act
 
@@ -76,20 +76,22 @@ namespace TestProjectSfApi.UnitTests
         public void ShoulCheckThatFlowWasFinished()
         {
             //Arrange
-            _mediator.Setup(a => a.Send(It.IsAny<GetRecordsQuery>(), new CancellationToken()))
+
+            _mediatorMock.Setup(a => a.Send(It.IsAny<GetRecordsQuery>(), new CancellationToken()))
                 .ReturnsAsync(new QueryResponseDTO()
                 {
                     Records = new List<SystemDataLoadLog>() {
                         new SystemDataLoadLog() { ActualRawTotalAmount = 12.33m, ActualRawTotalRecordCount = 3 } }
                 });
 
-            var wrapper = new SystemDataLoadLogWrapper(_mediator.Object);
+            var wrapper = new SystemDataLoadLogWrapper(_mediatorMock.Object);
 
             //Act
 
             var test = wrapper.UpdateSfSystemDataLoadLog(3, 12.33m);
 
             //Assert
+
             Assert.IsNotNull(test);
         }
     }
